@@ -248,7 +248,7 @@ Die Dopplerverbreiterung berechnet sich dabei gemäß (\(m\) ist die Masse des N
 \[\Delta\nu = \frac{2\nu}{c}\sqrt{\frac{2 k_{\mathrm{B}} T \ln(2)}{m}} = 1.31 \mathrm{GHz} \quad\text{für} \ T = 300 \ \mathrm{K}\]
 Von diesem relativ schmalen aber kontinuierlichen Spektrum werden durch die Wirkung des Resonators nur die diskreten Lasermoden in äquidistantem Abstand von \(a = \frac{c}{2L} = 320 \ \mathrm{MHz}\) durchgelassen. Aus der Theorie der optischen Resonatoren (z.B. Fabry-Perot-Interferometer) weiß man, dass diese Linien abhängig vom Reflexionsvermögen der Spiegel mehr oder weniger schmale Lorentzkurven sind. Da der Reflexionsgrad beim Laser aber sehr hoch ist, sind diese Peaks so schmal im Vergleich zur Dopplerbreite, dass man sie durch Delta-Distributionen annähern kann. Das Spektrum hat dann die endgültige Form
 \begin{align*}
-S_{\mathrm{res}}(\omega) =  S_0\cdot\mathrm{exp}\left[-4\ln(2)\cdot\left(\frac{\omega - \Omega}{\Delta\Omega}\right)^2\right] \cdot\sum_{n = 1}^{N} \delta(\omega - \Omega - n\cdot 2\pi a)
+S_{\mathrm{res}}(\omega) =  S_0\cdot\mathrm{exp}\left[-4\ln(2)\cdot\left(\frac{\omega - \Omega}{\Delta\Omega}\right)^2\right] \cdot\sum_{n = 0}^{N-1} \delta(\omega - \Omega - n\cdot 2\pi a)
 \end{align*} 
 Daraus lassen sich nun die normierte Kohärenzfunktion \(\gamma(\tau)\) und der Interferenzkontrast \(K(\tau)\) berechnen. Man erhält:
     % Bibliographie/Literaturverzeichnis
