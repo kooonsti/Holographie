@@ -1,0 +1,264 @@
+% -- Anfang Präambel
+\documentclass[german,  % Standardmäßig deutsche Eigenarten, englisch -> english
+parskip=full,  % Absätze durch Leerzeile trennen
+%bibliography=totoc,  % Literatur im Inhaltsverzeichnis (ist unüblich)
+%draft,  % TODO: Entwurfsmodus -> entfernen für endgültige Version
+]{scrartcl}
+\usepackage[utf8]{inputenc}  % Kodierung der Datei
+\usepackage[T1]{fontenc}  % Vollen Umfang der Schriftzeichen
+\usepackage[ngerman]{babel}  % Sprache auf Deutsch (neue Rechtschreibung)
+
+% Mathematik und Größen
+\usepackage{amsmath}
+\usepackage[locale=DE,  % deutsche Eigenarten, englisch -> US
+separate-uncertainty,  % Unsicherheiten seperat angeben (mit ±)
+]{siunitx}
+\usepackage{physics}  % Erstellung von Gleichungen vereinfachen
+\usepackage{yfonts}  % Frakturschrift für Real- und Imaginärteil komplexer Größen
+
+\usepackage{graphicx}  % Bilder einbinden \includegraphics{Pfad/zur/Datei(ohne Dateiendung)}
+
+% Gestaltung
+%\usepackage{microtype}  % Mikrotypographie (kann man am Ende verwenden)
+\usepackage{booktabs}  % schönere Tabellen
+\usepackage[toc]{multitoc}  % mehrspaltiges Inhaltsverzeichnis
+\usepackage{csquotes}  % Anführungszeichen mit \enquote
+\usepackage{caption}  % Anpassung der Bildunterschriften, Tabellenüberschriften
+\usepackage{subcaption}  % Unterabbildungen, Untertabellen, …
+\usepackage{enumitem}  % Listen anpassen
+\setlist{itemsep=-10pt}  % Abstände zwischen Listenpunkten verringern
+
+% Manipulation des Seitenstils
+\usepackage{scrpage2}
+% Kopf-/Fußzeilen setzen
+\pagestyle{scrheadings}  % Stil für die Seite setzen
+\clearscrheadings  % Stil zurücksetzen, um ihn neu zu definieren
+\automark{section}  % Abschnittsnamen als Seitenbeschriftung verwenden
+\ofoot{\pagemark}  % Seitenzahl außen in Fußzeile
+\ihead{\headmark}  % Seitenbeschriftung mittig in Kopfzeile
+\setheadsepline{.5pt}  % Kopzeile durch Linie abtrennen
+
+\usepackage[hidelinks]{hyperref}  % Links und weitere PDF-Features
+
+% TODO: Titel und Autor, … festlegen
+\newcommand*{\titel}{Holographie}
+\newcommand*{\autor}{Tom Drechsler, Konstantin Schmid}
+\newcommand*{\abk}{HO}
+\newcommand*{\betreuer}{Karla Roszeitis}
+\newcommand*{\messung}{14.11.2019}
+\newcommand*{\ort}{<Ort>}
+
+\hypersetup{pdfauthor={\autor}, pdftitle={\titel}}  % PDF-Metadaten setzen
+
+% automatischen Titel konfigurieren
+\titlehead{Fortgeschrittenen-Praktikum \abk \hfill TU Dresden}
+\subject{Versuchsprotokoll}
+\title{\titel}
+\author{\autor}
+\date{\begin{tabular}{ll}
+Protokoll: & \today\\
+Messung: & \messung\\
+Ort: & \ort\\
+Betreuer: & \betreuer\end{tabular}}
+
+% -- Ende Präambel
+
+\begin{document}
+\begin{titlepage}
+\maketitle  % Titel setzen
+\tableofcontents  % Inhaltsverzeichnis
+\end{titlepage}
+
+% Text Anfang
+\section{Versuchsziel und Überblick}
+Der Versuch hat das Ziel, sich mit Komponenten und Arbeitstechniken in einem Laserlabor vertraut zu machen. 
+\newline Zuerst wird ein Michelson-Interferometer aufgebaut und Stabilität sowie Kohärenzlänge werden untersucht. Danach wird die Holographie-Anordnung für Weißlicht-Reflexionshologramme aufgebaut und schließlich das Hologramm aufgezeichnet, entwickelt und untersucht. Als Vorkenntnisse werden Elektrodynamik, Fourieranalyse und das Grundprinzip des Lasers benötigt, welche im Folgenden nochmal zusammengefasst sind.
+
+\section{Theoretische Grundlagen}
+\subsection{Das Grundprinzip der Holographie}
+Klassische Fotografie hat den Nachteil, dass bloß die Intensitätsverteilung reproduziert werden kann und so die Phaseninformation der einfallenden Wellen, wie beschrieben durch Gleichung (\ref{ÜberlagerungWelle}), verloren geht.
+\begin{align}
+\label{ÜberlagerungWelle} \vec{E}=\sum_{i}\vec{a}_i \cos(\vec{k} \vec{r} - \omega t - \varphi_i)
+\end{align}
+In der Holographie wird das Lichtfeld des Objektes mit einer Referenzwelle überlagert und bei der Rekonstruktion des Lichtmusters wird das Hologramm wieder mit dieser Referenzwelle beleuchtet, sodass die rekonstruierte Welle in Phase und Amplitude der Originalwelle entspricht.
+
+\subsection{Mathematische Grundlagen und Definitionen}
+\subsubsection{Intensität elektromagnetischer Wellen}
+Die tatsächliche Intensität elektromagnetischer Strahlung ist ein Maß für die Energie pro Fläche und Zeitintervall. Im Allgemeinen wird die tatsächliche Intensität $I_{\mathrm{t}}$ mit Hilfe des Poynting-Vektors $\vec{S}$ über die Gleichung (\ref{Poynting}) bestimmt.
+\begin{align}
+\label{Poynting} I_{\mathrm{t}}=| \langle \vec{S} \rangle |
+\end{align}
+Dies vereinfacht sich in linearen Medien zu (\ref{LineareMedien})
+\begin{align}
+\label{LineareMedien} I_{\mathrm{t}}(t)= \varepsilon_0 c n \vec{E}^2 \stackrel{n=1}{=} \varepsilon_0 c \vec{E}(t)^2
+\end{align}
+Durch zeitliche Mittelung ergibt sich der finale Ausdruck für die Intensität:
+\begin{align}
+\label{Intensität} I = \langle I_{\mathrm{t}} \rangle = \lim\limits_{T \rightarrow \infty} \frac{1}{T} \int_{- \frac{T}{2}}^{\frac{T}{2}} I_{\mathrm{t}}(t) \ \mathrm{d}t = \varepsilon_0 c  \langle \vec{E}^2 \rangle
+\end{align}
+Im allgemeinen Fall wird tatsächlich der gesamte Vektor \(\vec{E}(\vec{r},t)\) benötigt. Wir betrachten im folgenden ausschließlich den Spezialfall für \textbf{linear polarisiertes} Licht. Hier oszilliert der Feldstärkevektor \(\vec{E}(\vec{r},t)\) in einer festen Ebene. Da man das Koordinatensystem beliebig wählen kann, ist es keine Einschränkung wenn man 
+\[\vec{E}(\vec{r},t) = E(\vec{r},t)\vec{e}_x\]
+d.h. \(\vec{E}\parallel\vec{e}_x\) legt. Dann ist aber \(\vec{E}(\vec{r},t)^2 = E(\vec{r},t)^2\), weshalb es ausreichend ist, mit \textbf{skalaren} Größen zu rechnen. Wir lassen daher ab sofort den Vektorpfeil weg. Außerdem ist für viele Rechnungen sehr praktisch, elektromagnetische Wellen durch die komplexe Exponentialfunktion zu beschreiben. Für die ebene Welle mit harmonischer Zeit- und Ortsabhängigkeit
+\[E(\vec{r},t) = E_0 \cos (\vec{k}\vec{r} - \Omega t)\]
+führt man das komplexe elektrische Feld \(\hat{E}\) ein:
+\[\hat{E}(\vec{r},t) = E_0 \mathrm{e}^{\mathrm{i}(\vec{k}\vec{r} - \Omega t)} = E_0 \left[\cos (\vec{k}\vec{r} - \Omega t) + \mathrm{i}\sin (\vec{k}\vec{r} - \Omega t)\right]\]
+Aus diesem ergibt sich das beobachtbare reelle elektrische Feld \(E\) durch Bildung des Realteils:
+\[E(\vec{r},t) = \textfrak{Re} \ \hat{E}(\vec{r},t) = \frac{1}{2}\left(\hat{E}(\vec{r},t) + \hat{E}^{*}(\vec{r},t)\right)\]
+wobei \(^{*}\) die komplexe Konjugation bedeutet. Mithilfe des komplexen Feldes \(\hat{E}\) kann das Betragsquadrat des elektrischen Feldstärkevektors umformuliert werden und (\ref{Intensität}) wird zu:
+\begin{align}
+\label{Intensität2} I = \frac{1}{2} \varepsilon_0 c \langle \hat{E} \hat{E^*} \rangle
+\end{align}
+
+\subsubsection{Die Fourierdarstellung}
+Das Fourierspektrum des reellen elektrischen Feldes ist definiert als:
+\begin{align}
+\label{Fourierspektrum} H(\omega) = \int_{- \infty}^{\infty}  E(t) e^{\mathrm{i}\omega t}  \ \mathrm{d}t, \omega \geq 0
+\end{align}
+Da allerdings für kontinuierliche Strahlung die Gesamtenergie divergiert, verwendet man stattdessen eine mittlere Leistung, wozu man einen zeitlichen Ausschnitt $E_T$ von $E(t)$ benötigt. Das dementsprechende Fourierspektrum $H_T(\omega)$ kann man analog über (\ref{Fourierspektrum}) ermitteln. Als Grenzwert findet man dann die spektrale Dichte S($\omega$):
+\begin{align}
+\label{SpektraleDichte} S(\omega)= \frac{1}{\pi} \lim\limits_{T \rightarrow \infty} \frac{|H_T(\omega)|^2}{T}
+\end{align}
+Mit dieser ist es möglich die mittlere Intensität als Integral über $S(\omega)$ auszudrücken:
+\begin{align}
+\label{Intensität3} I=\varepsilon_0 c \int_{0}^{\infty} S(\omega) \ \mathrm{d} \omega
+\end{align}
+
+\subsubsection{Die Interferenz von Wellen}
+Als Ansatz betrachten wir zwei sich überlagernde ebene harmonische Wellen, gegeben durch (\ref{Welle})
+\begin{align}
+\label{Welle} \hat{E_i}=a_i e^{\mathrm{i}(\vec{k}_i \vec{r} - \omega t - \varphi_i)}, i=1,2
+\end{align}
+Im Folgenden bezeichnet $\hat{E}_{tot}$ die Superposition der beiden einzelnen Amplituden.
+Die totale mittlere Intensität der beiden Wellen ist dann:
+\begin{align}
+\label{Intensität4} I_{\mathrm{tot}}(\vec{r})=\frac{1}{2} \varepsilon_0 c \langle \hat{E}_{\mathrm{tot}} \hat{E}_{\mathrm{tot}}^* \rangle = 
+I_1 + I_2 + 2\sqrt{I_1 I_2}\cdot \cos(\phi(\vec{r})) \,\,\text{mit}\,\, \phi(\vec{r}) = (\vec{k}_1 - \vec{k}_2) \vec{r} - (\varphi_1 - \varphi_2)
+\end{align}
+
+\subsection{Kohärenz und Kontrastfunktion}
+\subsubsection{Ebene Wellen und reale Wellenzüge}
+Alle bisherigen Überlegungen wurden mit ebenen Wellen durchgeführt. Diese bilden das denkbar einfachste Modell und erfüllen auch die Maxwell'schen Gleichungen. Sie haben allerdings den Nachteil, dass sie der Realität nur bedingt nahe kommen: Da die ebenen Wellen mathematisch durch Sinus- und Cosinusfunktionen oder die komplexe Exponentialfunktion beschrieben werden, sind sie zwangsläufig sowohl zeitlich als auch örtlich unendlich weit ausgedehnt. Jede reale Lichtquelle sendet aber stets nur Wellenzüge von endlicher Länge aus. Das hat aber eine recht unangenehme Konsequenz: Betrachten wir beispielsweise einen Wellenzug, die während des Zeitintervalls \(\left[-\frac{T}{2},\frac{T}{2}\right]\) durch eine ebene Welle beschrieben werden kann und davor und danach verschwindet:
+\[\hat{E}(\vec{r},t) = E_0 \mathrm{e}^{\mathrm{i}(\vec{k}\vec{r} - \Omega t)} \cdot\left[\Theta\left(t+\frac{T}{2}\right) - \Theta\left(t-\frac{T}{2}\right)\right]\]
+mit der Heaviside-Funktion \(\Theta\). Die Fouriertransformierte des Realteils von \(\hat{E}\) im Zeitbereich liefert dann das Frequenzspektrum von \(E\):
+\begin{align*}
+H(\omega) &= \int_{-\infty}^{\infty} \mathrm{e}^{\mathrm{i}\omega t}\textfrak{Re} \ \hat{E}(\vec{r},t) \ \mathrm{d} t \\
+&= \frac{E_0}{2} \int_{-\frac{T}{2}}^{\frac{T}{2}} \mathrm{e}^{\mathrm{i}\omega t}\left[\mathrm{e}^{\mathrm{i}(\vec{k}\vec{r} - \Omega t)} + \mathrm{e}^{-\mathrm{i}(\vec{k}\vec{r} - \Omega t)}\right] \ \mathrm{d} t \\
+&= \frac{E_0}{2} \left\lbrace \mathrm{e}^{\mathrm{i}\vec{k}\vec{r}}\int_{-\frac{T}{2}}^{\frac{T}{2}} \mathrm{e}^{\mathrm{i}(\omega - \Omega) t} \ \mathrm{d} t + 
+\mathrm{e}^{-\mathrm{i}\vec{k}\vec{r}}\int_{-\frac{T}{2}}^{\frac{T}{2}} \mathrm{e}^{\mathrm{i}(\omega + \Omega) t} \ \mathrm{d} t\right\rbrace \\
+&= E_0 \left\lbrace   \frac{\sin\left[(\omega - \Omega)\frac{T}{2}\right]}{\omega - \Omega} \cdot \mathrm{e}^{\mathrm{i}\vec{k}\vec{r}} +  \frac{\sin\left[(\omega + \Omega)\frac{T}{2}\right]}{\omega + \Omega} \cdot \mathrm{e}^{-\mathrm{i}\vec{k}\vec{r}}\right\rbrace
+\end{align*}
+Für die spezielle Wahl \(\vec{r} = \vec{\mathrm{o}}\) ist das Frequenzspektrum in der folgenden Abbildung dargestellt:
+\begin{figure}[h!]\centering
+\includegraphics[scale=0.4]{Frequenzspektrum.png}
+\label{Frequenzspqktrum}
+\caption{Frequenzspektrum \(H(\omega)\) bei \(\vec{r} = \vec{\mathrm{o}}\), in willkürlichen Einheiten}
+\end{figure}
+
+Für Orte \(\vec{r}\neq \vec{\mathrm{o}}\) kommt es lediglich zu einer örtlichen Oszillation, die wir im folgenden nicht weiter betrachten. Auffällig ist, dass das Spektrum \(H(\omega)\) für große \(\omega\) im wesentlichen vom ersten Summanden bestimmt wird, weil die Funktion \(\frac{\sin(x)}{x}\) ein sehr ausgeprägtes Maximum hat und dann rasch abfällt. Da \(H\) ohnehin nur für positive \(\Omega\) benötigt wird, kann man in sehr guter Näherung schreiben:
+\begin{align}
+H(\omega) \approx E_0 \mathrm{e}^{\mathrm{i}\vec{k}\vec{r}}\cdot \frac{\sin\left[(\omega - \Omega)\frac{T}{2}\right]}{\omega - \Omega}  
+\end{align}
+Die exakte Berechnung der spektralen Energiedichte ist mathematisch nicht ganz trivial, weil man streng genommen über ein genügend großes Ensemble zu mitteln hat. Abgesehen von numerischen Faktoren ergibt sich aber im wesentlichen folgender funktionaler Zusammenhang:
+\begin{align}
+S(\omega) \sim \frac{\sin^2\left[(\omega - \Omega)\frac{T}{2}\right]}{(\omega - \Omega)^2}  
+\end{align}
+Man kann sich anhand von \ref{Frequenzspqktrum} leicht klar machen, dass \(S\) einen scharfen Peak bei \(\omega=\Omega\) hat. Die nächsten beiden Nullstellen sind dann offenbar die Nullstellen der Sinusfunktion im Zähler, die bei \(\omega = \Omega \pm \frac{2\pi}{T}\) liegen. Der Peak hat demnach eine charakteristische \textbf{Frequenzbreite} von
+\begin{align}
+\Delta \omega = \frac{2\pi}{T}  
+\end{align}
+Im Gegensatz zur ebenen Welle hat ein endlicher Wellenzug also stets ein Frequenzspektrum, dass keine Delta-Distribution ist und deswegen auch eine von null verschiedene Frequenzbreite. Dies ist eine grundsätzliche Eigenschaft der Fouriertransformation und wesentlich für die gesamte Wellenoptik. Die Strecke, die der Wellenzug während der Zeit \(T\) zurücklegt, nennt man die \textbf{Kohärenzlänge}
+\begin{align}
+l_{\mathrm{C}} := c\cdot T = \frac{2\pi c}{\Delta\omega} = \frac{c}{\Delta\nu} 
+\end{align}
+Je kleiner die Frequenzbreite d.h. je schärfer der Peak, desto größer die Kohärenzlänge und umgekehrt. Die ebene Welle hat definitionsgemäß eine unendliche Kohärenzlänge, weil \(l_{\mathrm{C}}\) für \(\Delta\omega\) divergiert. 
+\subsubsection{Präzise Definition der Kohärenzlänge, Kontrastfunktion}
+Bis jetzt wurde nur ein qualitatives Verständnis für die Bedeutung der Kohärenz gegeben. Für die Rechnung am Laser benötigt man aber eine leistungsfähigere Definition der Kohärenzlänge. Dazu überlegt man sich folgendes: In Interferenzexperimenten, für die die Kohärenz ja das wesentliche Kriterium ist, führt man stets zwei Lichtstrahlen mit unterschiedlichen Laufwegen und dementsprechend verschiedenen Laufzeiten zusammen. Betrachten wir also ein resultierendes komplexes Feld
+\[\hat{E}_{\mathrm{res}}(t) = \hat{E}(t) + \hat{E}(t+\tau)\]
+das sich aus zwei um die Zeit \(\tau\) verschobenen Signalen ergibt. Die Ortsabhängigkeit kann hier unterdrückt werden, weil die Wellen ja am selben Ort überlagert werden. Die Intensität der resultierenden Welle berechnet sich dann zu:
+\begin{align*}
+I_{\mathrm{res}}(\tau) &= \frac{1}{2}\varepsilon_0 c \left\langle \hat{E}_{\mathrm{res}}(t) \hat{E}_{\mathrm{res}}^{*}(t)\right\rangle \\
+&= \frac{1}{2}\varepsilon_0 c \left\langle \left[\hat{E}(t) + \hat{E}(t+\tau)\right] + \left[\hat{E}^{*}(t) + \hat{E}^{*}(t+\tau)\right]\right\rangle \\
+&= \frac{1}{2}\varepsilon_0 c \left\lbrace\left\langle \hat{E}(t)\hat{E}^{*}(t)\right\rangle + \left\langle\hat{E}(t)\hat{E}^{*}(t+\tau)\right\rangle + \left\langle\hat{E}(t+\tau)\hat{E}^{*}(t)\right\rangle + \left\langle\hat{E}(t+\tau)\hat{E}^{*}(t+\tau) \right\rangle \right\rbrace\\
+&= \frac{1}{2}\varepsilon_0 c \left\lbrace\left\langle \hat{E}(t)\hat{E}^{*}(t)\right\rangle + \left\langle\hat{E}^{*}(t)\hat{E}(t+\tau)\right\rangle^{*} + \left\langle\hat{E}(t+\tau)\hat{E}^{*}(t)\right\rangle + \left\langle\hat{E}(t+\tau)\hat{E}^{*}(t+\tau) \right\rangle \right\rbrace\\
+&= \frac{1}{2}\varepsilon_0 c \left\lbrace \frac{2}{c \varepsilon_0}I_1 + 2\cdot\textfrak{Re} \ \left\langle\hat{E}^{*}(t)\hat{E}(t+\tau)\right\rangle + \frac{2}{c \varepsilon_0}I_1\right\rbrace \\
+&= 2 I_1 + \varepsilon_0 c \ \textfrak{Re} \ \left\langle\hat{E}^{*}(t)\hat{E}(t+\tau)\right\rangle 
+\end{align*} 
+wobei wir verwendet haben, dass \(\langle \hat{E}(t)\hat{E}^{*}(t)\rangle = \langle\hat{E}(t+\tau)\hat{E}^{*}(t+\tau) \rangle = I_1\) die zeitgemittelte Intensität ist. Die hier noch auftretende Mittelwert wird als sogenannte \textbf{Selbstkohärenzfunktion} definiert:
+\begin{align}
+\Gamma(\tau) := \left\langle\hat{E}^{*}(t)\hat{E}(t+\tau)\right\rangle = \lim_{T\rightarrow\infty} \int_{-\frac{T}{2}}^{\frac{T}{2}} \hat{E}^{*}(t)\hat{E}(t+\tau) \ \mathrm{d}t
+\end{align}
+Insbesondere erhält man für \(\tau=0\) die Intensität zurück:
+\begin{align*}
+\Gamma(0) = \left\langle\hat{E}^{*}(t)\hat{E}(t)\right\rangle = \frac{2}{\varepsilon_0 c}I_1
+\end{align*}
+Es ist sehr nützlich, nach Division durch \(I_1\) die \textbf{normierte Selbstkohärenzfunktion} einzuführen:
+\begin{align}
+\gamma(\tau) := \frac{\Gamma(\tau)}{\Gamma(0)} = \frac{\varepsilon c}{2I_1}\Gamma(\tau)
+\end{align}
+Durch Umstellen findet man leicht:
+\[2I_1\gamma(\tau) =  \varepsilon c \Gamma(\tau)= \varepsilon_0 c \left\langle\hat{E}^{*}(t)\hat{E}(t+\tau)\right\rangle \]
+Einsetzen in die Gleichung für \(I_{\mathrm{res}}(\tau)\) ergibt eine sehr kompakte Darstellung:
+\begin{align}
+\underline{\underline{I_{\mathrm{res}}(\tau) = 2I_1 \left[ 1 +  \ \textfrak{Re} \ \gamma(\tau)\right]}}
+\end{align}
+Mithilfe der Intensität kann nun der \textbf{Interferenzkontrast} zwischen benachbarten Maxima und Minima definiert werden:
+\begin{align}
+K(\tau) := \frac{I_{\mathrm{res}}(\tau_{\mathrm{max}}) - I_{\mathrm{res}}(\tau_{\mathrm{min}}) }{I_{\mathrm{res}}(\tau_{\mathrm{max}}) + I_{\mathrm{res}}(\tau_{\mathrm{min}}) }
+\end{align}
+Man kann einen nützlichen Zusammenhang zwischen \(K\) und \(\gamma\) herleiten: Bei typischen Interferenzversuchen wird mit praktisch monochromatischem Licht von geringer Frequenzunschärfe gearbeitet. In diesem Fall kann man die Intensität annähern durch:
+\begin{align*}
+I_{\mathrm{res}}(\tau_{\mathrm{min}}) &\approx 2I_1 \left[ 1 -  |\gamma(\tau)|\right] \\
+I_{\mathrm{res}}(\tau_{\mathrm{max}}) &\approx 2I_1 \left[ 1 +  |\gamma(\tau)|\right] \\
+\end{align*}
+Einsetzen in den Kontrast und vereinfachen ergibt für den Spezialfall von praktisch monochromatischem Licht:
+\begin{align}
+K(\tau) = |\gamma(\tau)|
+\end{align}
+Damit ist die Kohärenzzeit \(\tau_{\mathrm{C}}\) präzise definierbar als die Zeitspanne, nach der der Kontrast auf einen bestimmten Wert abgefallen ist. Welchen Wert man hierfür nimmt, ist eine reine Frage der Zweckmäßigkeit. Zwei weit verbreitete Systeme definieren die Kohärenzzeit durch
+\begin{align}
+\underline{\underline{K(\tau_{\mathrm{C}}) := \frac{1}{\mathrm{e}}}} \quad\quad\quad\text{oder} \quad\quad\quad K(\tau_{\mathrm{C}}) := \frac{1}{\sqrt{2}}
+\end{align}
+wobei wir in dieser Arbeit der unterstrichenen Konvention folgen. Die Kohärenzlänge kann dann wie üblich definiert werden als Länge, die das Licht während der Zeit \(\tau_{\mathrm{C}}\) zurücklegt:
+\begin{align}
+l_{\mathrm{C}} := c\cdot\tau_{\mathrm{C}}
+\end{align}
+\subsubsection{Anwendung auf den Laser}
+Für praktische Anwendungen ist es nützlich, die normierte Selbstkohärenzfunktion \(\gamma(\tau)\) durch die Spektrale Leistungsdichte \(S(\omega)\) auszudrücken, weil diese eine charakteristische Eigenschaft der Lichtquelle ist. Man erhält für nahezu monochromatisches Licht den folgenden Ausdruck:
+\begin{align}
+\gamma(\tau) = \frac{\int_{0}^{\infty} S(\omega)\cdot\mathrm{e}^{-\mathrm{i}\omega t}\ \mathrm{d}\omega}{\int_{0}^{\infty}S(\omega) \ \mathrm{d}\omega}
+\end{align}
+Wenn man weiß, wie die Frequenzen im verwendeten Licht verteilt sind, kann damit sofort der Kontrast und auch die Kohärenzlänge berechnet werden, solange es sich um genügend kleine Frequenzunschärfen handelt. In unserem Versuch wird ein Helium-Neon-Gaslaser verwendet. Dieser verwendet Neon als Lasermedium und das Helium als Pumpmedium. Vom Prinzip her funktioniert dieser Lasertyp wie folgt:
+\begin{itemize}
+\item Durch eine elektrische Entladung zwischen zwei Elektroden bei einer Spannung von \(U\sim 2\mathrm{kV}\) werden die Heliumatome vom Grundzustand in einen angeregten Zustand versetzt. Durch einen sogenannten Stoß zweiter Art gehen die Heliumatome in den Grundzustand zurück und überführen die Neonatome in den angeregten Zustand.
+\item Die angeregten Zustände des Heliums sind für ein Atom vergleichsweise langlebig \((t\sim 1\mathrm{ms})\), sodass bei kontinuierlicher Energiezufuhr stets ausreichend viele angeregte Heliumatome vorhanden sind, um die Neonatome durch Stöße anzuregen. Somit kommt es im Neon zu einer Besetzungsinversion.
+\item Durch Beschuss mit einem Photon passender Energie wird das Neon zur stimulierten Emission gebracht. Es geht in einen energetisch tieferen Zustand über und erzeugt eine exakte Kopie des eingestrahlten Photons. Die Photonen laufen dabei zwischen zwei halbdurchlässigne Spiegeln, die einen optischen Resonator bilden. Durch das mehrmalige durchlaufen erhöht sich einerseits die Chance auf stimulierte Emission. Andererseits werden auch alle Photonen, die keine stehenden Wellen im Resonator bilden können, ausgelöscht.
+\item Das Neon geht durch spontane Emission in seinen Grundzustand zurück. Durch erneute Stoßanregung beginnt der Prozess von vorn. Sobald die durch Pumpen zugeführte Energie sämtliche Verluste (Streuung, Auskopplung am Ende des Lasers, ...) ausgleicht, ist die sogenannte \textbf{Laserschwelle} erreicht und es kommt zu einer lawinenartigen Verstärkung des Lichts.
+\end{itemize}
+In einem optischen Resonator der Länge \(L\) können sich nur stehende Wellen mit einer Wellenlänge beziehungsweise einer Frequenz von
+\[n\cdot\frac{\lambda}{2} = L  \quad\Longleftrightarrow\quad \nu = n\frac{c}{2L}\]
+ausbilden. Alle anderen Frequenzen werden durch destruktive Interferenz ausgelöscht. Es ergeben sich mehrere Frequenzen in äquidistanten Abständen, die man als \textbf{longitudinale Moden} bezeichnet:
+\begin{align}
+\Delta\nu = \frac{c}{2L}
+\end{align}
+Das Laserspektrum setzt sich nun wie folgt zusammen: Der Laserübergang des Neonatoms im sichtbaren Bereich liegt bei \(\lambda = 632.8 \mathrm{nm}\). Diese Wellenlänge ist aufgrund mehrerer Störfaktoren nicht scharf definiert. Der dominante Effekt ist die Dopplerverbreiterung aufgrund der thermischen Bewegung der Gasatome. Dieser führt zu einer gaußförmigen spektralen Leistungsdichte mit
+\begin{align}
+S(\omega) = S_0\cdot\mathrm{exp}\left[-4\ln(2)\cdot\left(\frac{\omega - \Omega}{\Delta\Omega}\right)^2\right] \quad\quad \Omega = 2.97\cdot 10^{15}\mathrm{Hz} 
+\end{align} 
+Die Dopplerverbreiterung berechnet sich dabei gemäß (\(m\) ist die Masse des Neonatoms):
+\[\Delta\nu = \frac{2\nu}{c}\sqrt{\frac{2 k_{\mathrm{B}} T \ln(2)}{m}} = 1.31 \mathrm{GHz} \quad\text{für} \ T = 300 \ \mathrm{K}\]
+Von diesem relativ schmalen aber kontinuierlichen Spektrum werden durch die Wirkung des Resonators nur die diskreten Lasermoden in äquidistantem Abstand von \(a = \frac{c}{2L} = 320 \ \mathrm{MHz}\) durchgelassen. Aus der Theorie der optischen Resonatoren (z.B. Fabry-Perot-Interferometer) weiß man, dass diese Linien abhängig vom Reflexionsvermögen der Spiegel mehr oder weniger schmale Lorentzkurven sind. Da der Reflexionsgrad beim Laser aber sehr hoch ist, sind diese Peaks so schmal im Vergleich zur Dopplerbreite, dass man sie durch Delta-Distributionen annähern kann. Das Spektrum hat dann die endgültige Form
+\begin{align*}
+S_{\mathrm{res}}(\omega) =  S_0\cdot\mathrm{exp}\left[-4\ln(2)\cdot\left(\frac{\omega - \Omega}{\Delta\Omega}\right)^2\right] \cdot\sum_{n = 1}^{N} \delta(\omega - \Omega - n\cdot 2\pi a)
+\end{align*} 
+    % Bibliographie/Literaturverzeichnis
+    \begin{thebibliography}{9}
+    \bibitem{wiki:Intensität}
+    Wikipedia,
+    \emph{Intensität (Physik)},
+    \url{https://de.wikipedia.org/wiki/Intensit%C3%A4t_(Physik)},
+    25.\,Okt.~2019.
+    \end{thebibliography}
+
+% Ende Dokument
+
+\end{document}
